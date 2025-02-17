@@ -50,7 +50,7 @@ The challenge presented three main technical requirements:
 4. **Technical Stack**
     - Spring Boot with PostgreSQL
     - Rationale:
-        - Robust framework with good JSON support
+        - Vital framework with good JSON support
         - PostgreSQL's JSONB type for efficient JSON storage
         - Built-in connection pooling and transaction management
     - Trade-offs:
@@ -65,7 +65,7 @@ The challenge presented three main technical requirements:
     - Batch similar requests
 
 2. **Data Model Evolution**
-    - Consider normalizing data for better querying
+    - Consider normalising data for better querying
     - Add versioning for gate connections
     - Implement soft deletes
 
