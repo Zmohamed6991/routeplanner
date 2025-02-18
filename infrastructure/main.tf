@@ -200,7 +200,7 @@ resource "aws_instance" "app" {
               sleep 10
 
               # Copy application from S3
-              aws s3 cp s3://${var.artifact_bucket}/route-planner-latest.jar /opt/route-planner/app.jar
+              aws s3 cp s3://${var.artifact_bucket}/routeplanner-latest.jar /opt/route-planner/app.jar
 
               # Create service file
               cat > /etc/systemd/system/route-planner.service <<EOL

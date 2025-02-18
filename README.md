@@ -100,8 +100,8 @@ The challenge presented three main technical requirements:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/route-planner.git
-cd route-planner
+git clone https://github.com/yourusername/routeplanner.git
+cd routeplanner
 ```
 
 2. Start PostgreSQL using Docker:
