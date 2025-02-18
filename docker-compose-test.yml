@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  postgres-test:
+    container_name: hstc-postgres-test
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: hstc_test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      PGDATA: /data/postgres
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

@@ -13,7 +13,7 @@ public class TransportService {
         double personalTransportCost = (PERSONAL_TRANSPORT_RATE * distance) + (parkingDays * PARKING_RATE);
         double hstcTransportCost = HSTC_TRANSPORT_RATE * distance;
 
-        if (passengers > 4 || personalTransportCost > hstcTransportCost) {
+        if (passengers > 4) {
             return new TransportResponse("HSTC Transport", hstcTransportCost);
         }
 

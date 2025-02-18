@@ -45,8 +45,8 @@ public class RouteService {
                     String targetId = conn.get("id").asText();
                     int hu = conn.get("hu").asInt();
 
-                    int newDistance = distances.get(currentId) + hu;
-                    if (newDistance < distances.get(targetId)) {
+                    Integer newDistance = distances.get(currentId) + hu;
+                    if (distances.get(targetId) == null || newDistance < distances.get(targetId)) {
                         distances.put(targetId, newDistance);
                         previousNodes.put(targetId, currentId);
                         queue.add(targetId);

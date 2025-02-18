@@ -176,3 +176,22 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/hstc
 spring.datasource.username=postgres
 spring.datasource.password=postgres
 ```
+
+## Testing
+
+The project uses a separate PostgreSQL instance for testing.
+
+1. Start test database:
+```bash
+docker-compose -f docker-compose-test.yml up -d
+```
+
+2. Run tests:
+```bash
+mvn test
+```
+
+To stop test database:
+```bash
+docker-compose -f docker-compose-test.yml down
+```
