@@ -172,25 +172,25 @@ resource "aws_iam_role" "ec2_role" {
   })
 }
 
-resource "aws_iam_role_policy" "s3_access" {
-  name = "s3-access"
-  role = aws_iam_role.ec2_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject"
-        ]
-        Resource = [
-          "${aws_s3_bucket.artifacts.arn}/*"
-        ]
-      }
-    ]
-  })
-}
+# resource "aws_iam_role_policy" "s3_access" {
+#   name = "s3-access"
+#   role = aws_iam_role.ec2_role.id
+#
+#   policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Effect = "Allow"
+#         Action = [
+#           "s3:GetObject"
+#         ]
+#         Resource = [
+#           "${aws_s3_bucket.artifacts.arn}/*"
+#         ]
+#       }
+#     ]
+#   })
+# }
 
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "route-planner-profile"
