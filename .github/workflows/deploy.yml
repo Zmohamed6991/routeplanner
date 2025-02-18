@@ -1,0 +1,145 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  AWS_REGION: eu-west-2
+  ARTIFACT_BUCKET: route-planner-artifacts-${{ github.repository_owner }}
+  TERRAFORM_VERSION: 1.5.7
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+          cache: maven
+
+      - name: Run Tests
+        run: mvn test
+        env:
+          MAVEN_OPTS: "-Xmx3072m"
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+        env:
+          MAVEN_OPTS: "-Xmx3072m"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Generate version tag
+        id: version
+        run: |
+          VERSION=$(date +'%Y%m%d%H%M%S')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Upload artifact to S3
+        run: |
+          # Upload versioned artifact
+          aws s3 cp target/route-planner-*.jar "s3://${{ env.ARTIFACT_BUCKET }}/route-planner-${{ env.VERSION }}.jar"
+          if [ $? -ne 0 ]; then
+            echo "Failed to upload versioned artifact"
+            exit 1
+          fi
+          
+          # Upload as latest
+          aws s3 cp target/route-planner-*.jar "s3://${{ env.ARTIFACT_BUCKET }}/route-planner-latest.jar"
+          if [ $? -ne 0 ]; then
+            echo "Failed to upload latest artifact"
+            exit 1
+          fi
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+        continue-on-error: true
+
+      - name: Terraform Init
+        run: |
+          terraform init
+          if [ $? -ne 0 ]; then
+            echo "Terraform init failed"
+            exit 1
+          fi
+
+      - name: Terraform Validate
+        run: |
+          terraform validate
+          if [ $? -ne 0 ]; then
+            echo "Terraform validation failed"
+            exit 1
+          fi
+
+      - name: Terraform Plan
+        run: |
+          terraform plan -out=tfplan
+          if [ $? -ne 0 ]; then
+            echo "Terraform plan failed"
+            exit 1
+          fi
+        env:
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+          TF_VAR_key_name: route-planner-key
+          TF_VAR_artifact_bucket: ${{ env.ARTIFACT_BUCKET }}
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: |
+          terraform apply -auto-approve tfplan
+          if [ $? -ne 0 ]; then
+            echo "Terraform apply failed"
+            exit 1
+          fi
+        env:
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+          TF_VAR_key_name: route-planner-key
+          TF_VAR_artifact_bucket: ${{ env.ARTIFACT_BUCKET }}
