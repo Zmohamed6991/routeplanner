@@ -9,7 +9,7 @@ terraform {
   required_version = ">= 1.0"
 
   backend "s3" {
-    bucket         = "route-planner-terraform-state"
+    bucket         = "route-planner-terraform-bucket"
     key            = "prod/terraform.tfstate"
     region         = "eu-west-2"
     encrypt        = true
