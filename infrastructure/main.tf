@@ -242,37 +242,37 @@ resource "aws_instance" "app" {
   }
 }
 
-# S3 Bucket for artifacts
-resource "aws_s3_bucket" "artifacts" {
-  bucket = var.artifact_bucket
+# # S3 Bucket for artifacts
+# resource "aws_s3_bucket" "artifacts" {
+#   bucket = var.artifact_bucket
+#
+#   tags = {
+#     Name = "route-planner-artifacts"
+#   }
+# }
+#
+# resource "aws_s3_bucket_versioning" "artifacts" {
+#   bucket = aws_s3_bucket.artifacts.id
+#   versioning_configuration {
+#     status = "Enabled"
+#   }
+# }
 
-  tags = {
-    Name = "route-planner-artifacts"
-  }
-}
-
-resource "aws_s3_bucket_versioning" "artifacts" {
-  bucket = aws_s3_bucket.artifacts.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-# DynamoDB for state locking
-resource "aws_dynamodb_table" "terraform_lock" {
-  name           = "terraform-lock"
-  billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-
-  tags = {
-    Name = "route-planner-terraform-lock"
-  }
-}
+# # DynamoDB for state locking
+# resource "aws_dynamodb_table" "terraform_lock" {
+#   name           = "terraform-lock"
+#   billing_mode   = "PAY_PER_REQUEST"
+#   hash_key       = "LockID"
+#
+#   attribute {
+#     name = "LockID"
+#     type = "S"
+#   }
+#
+#   tags = {
+#     Name = "route-planner-terraform-lock"
+#   }
+# }
 
 # Variables
 variable "db_password" {
