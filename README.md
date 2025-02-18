@@ -195,3 +195,34 @@ To stop test database:
 ```bash
 docker-compose -f docker-compose-test.yml down
 ```
+
+## Terraform
+
+### Create S3 bucket
+```
+aws s3api create-bucket \
+    --bucket route-planner-terraform-bucket \
+    --region eu-west-2 \
+    --create-bucket-configuration LocationConstraint=eu-west-2
+```
+
+### Enable bucket versioning
+```
+aws s3api put-bucket-versioning \
+    --bucket route-planner-terraform-bucket \
+    --versioning-configuration Status=Enabled
+```
+
+### Create dynamo db table for state locking
+```
+aws dynamodb create-table \
+    --table-name terraform-lock \
+    --attribute-definitions AttributeName=LockID,AttributeType=S \
+    --key-schema AttributeName=LockID,KeyType=HASH \
+    --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+```
+
+### Create key pair for ec2
+```
+aws ec2 create-key-pair --key-name route-planner-key --region eu-west-2 --query 'KeyMaterial' --output text > route-planner-key.pem
+```

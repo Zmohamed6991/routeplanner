@@ -222,6 +222,28 @@ resource "aws_instance" "app" {
   }
 }
 
+resource "aws_iam_role_policy" "s3_access" {
+  name = "route-planner-s3-access"
+  role = aws_iam_role.ec2_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::route-planner-artifacts",
+          "arn:aws:s3:::route-planner-artifacts/*"
+        ]
+      }
+    ]
+  })
+}
+
 
 # Variables
 variable "db_password" {
