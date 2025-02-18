@@ -179,7 +179,8 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 
 # EC2 Instance
 resource "aws_instance" "app" {
-  ami                    = "ami-0505148b3591e4c07" # Amazon Linux 2023
+  # ami-0505148b3591e4c07 was Amazon Linux, change to Ubuntu 22.04
+  ami                    = "ami-0505c450286024b66" # Ubuntu 22.04 LTS in eu-west-2
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public_1.id
   vpc_security_group_ids = [aws_security_group.app.id]
@@ -188,9 +189,17 @@ resource "aws_instance" "app" {
 
   user_data = <<-EOF
               #!/bin/bash
-              yum update -y
-              yum install -y java-17-amazon-corretto
+              # Update package list and install dependencies
+              apt-get update
+              apt-get install -y openjdk-17-jdk awscli
+
+              # Create application directory
               mkdir -p /opt/route-planner
+
+              # Wait for instance profile to propagate
+              sleep 10
+
+              # Copy application from S3
               aws s3 cp s3://${var.artifact_bucket}/route-planner-latest.jar /opt/route-planner/app.jar
 
               # Create service file
@@ -212,7 +221,8 @@ resource "aws_instance" "app" {
               WantedBy=multi-user.target
               EOL
 
-              # Start service
+              # Enable and start service
+              systemctl daemon-reload
               systemctl enable route-planner
               systemctl start route-planner
               EOF
@@ -220,6 +230,9 @@ resource "aws_instance" "app" {
   tags = {
     Name = "route-planner-app"
   }
+
+  # Add this to ensure user_data script completes
+  user_data_replace_on_change = true
 }
 
 resource "aws_iam_role_policy" "s3_access" {
