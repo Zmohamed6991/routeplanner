@@ -172,26 +172,6 @@ resource "aws_iam_role" "ec2_role" {
   })
 }
 
-# resource "aws_iam_role_policy" "s3_access" {
-#   name = "s3-access"
-#   role = aws_iam_role.ec2_role.id
-#
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Effect = "Allow"
-#         Action = [
-#           "s3:GetObject"
-#         ]
-#         Resource = [
-#           "${aws_s3_bucket.artifacts.arn}/*"
-#         ]
-#       }
-#     ]
-#   })
-# }
-
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "route-planner-profile"
   role = aws_iam_role.ec2_role.name
@@ -242,37 +222,6 @@ resource "aws_instance" "app" {
   }
 }
 
-# # S3 Bucket for artifacts
-# resource "aws_s3_bucket" "artifacts" {
-#   bucket = var.artifact_bucket
-#
-#   tags = {
-#     Name = "route-planner-artifacts"
-#   }
-# }
-#
-# resource "aws_s3_bucket_versioning" "artifacts" {
-#   bucket = aws_s3_bucket.artifacts.id
-#   versioning_configuration {
-#     status = "Enabled"
-#   }
-# }
-
-# # DynamoDB for state locking
-# resource "aws_dynamodb_table" "terraform_lock" {
-#   name           = "terraform-lock"
-#   billing_mode   = "PAY_PER_REQUEST"
-#   hash_key       = "LockID"
-#
-#   attribute {
-#     name = "LockID"
-#     type = "S"
-#   }
-#
-#   tags = {
-#     Name = "route-planner-terraform-lock"
-#   }
-# }
 
 # Variables
 variable "db_password" {
