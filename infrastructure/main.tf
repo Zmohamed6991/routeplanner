@@ -180,7 +180,7 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 # EC2 Instance
 resource "aws_instance" "app" {
   # ami-0505148b3591e4c07 was Amazon Linux, change to Ubuntu 22.04
-  ami                    = "ami-0505c450286024b66" # Ubuntu 22.04 LTS in eu-west-2
+  ami                    = "ami-0cb3b960441426684" # Ubuntu 22.04 LTS in eu-west-2
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public_1.id
   vpc_security_group_ids = [aws_security_group.app.id]
