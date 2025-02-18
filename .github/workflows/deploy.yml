@@ -47,14 +47,14 @@ jobs:
       - name: Upload artifact to S3
         run: |
           # Upload versioned artifact
-          aws s3 cp target/route-planner-*.jar "s3://${{ env.ARTIFACT_BUCKET }}/route-planner-${{ env.VERSION }}.jar"
+          aws s3 cp target/routeplanner-*.jar "s3://${{ env.ARTIFACT_BUCKET }}/routeplanner-${{ env.VERSION }}.jar"
           if [ $? -ne 0 ]; then
             echo "Failed to upload versioned artifact"
             exit 1
           fi
           
           # Upload as latest
-          aws s3 cp target/route-planner-*.jar "s3://${{ env.ARTIFACT_BUCKET }}/route-planner-latest.jar"
+          aws s3 cp target/routeplanner-*.jar "s3://${{ env.ARTIFACT_BUCKET }}/routeplanner-latest.jar"
           if [ $? -ne 0 ]; then
             echo "Failed to upload latest artifact"
             exit 1
