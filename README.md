@@ -14,65 +14,65 @@ The challenge presented three main technical requirements:
 ### Key Design Decisions
 
 1. **Data Storage**
-    - Chose to store gate connections as JSON instead of normalized tables
-    - Rationale:
-        - Faster prototyping and development
-        - Connections are read-heavy but rarely updated
-        - Structure matches the provided data format
-        - Single table design simplifies initial deployment
-    - Trade-offs:
-        - Less efficient querying of specific connections
-        - No referential integrity enforcement
-        - Larger storage footprint
+   - Chose to store gate connections as JSON instead of normalized tables
+   - Rationale:
+      - Faster prototyping and development
+      - Connections are read-heavy but rarely updated
+      - Structure matches the provided data format
+      - Single table design simplifies initial deployment
+   - Trade-offs:
+      - Less efficient querying of specific connections
+      - No referential integrity enforcement
+      - Larger storage footprint
 
 2. **Route Finding Algorithm**
-    - Implemented Dijkstra's algorithm for shortest path finding
-    - Rationale:
-        - Guaranteed to find the shortest (cheapest) path
-        - Well-suited for weighted, directed graphs
-        - Efficient for the given network size
-    - Trade-offs:
-        - More complex than simple BFS/DFS
-        - Uses more memory to track distances
-        - Overkill for very small networks
+   - Implemented Dijkstra's algorithm for shortest path finding
+   - Rationale:
+      - Guaranteed to find the shortest (cheapest) path
+      - Well-suited for weighted, directed graphs
+      - Efficient for the given network size
+   - Trade-offs:
+      - More complex than simple BFS/DFS
+      - Uses more memory to track distances
+      - Overkill for very small networks
 
 3. **API Design**
-    - RESTful endpoints with clear resource naming
-    - Query parameters for transport calculations
-    - Rationale:
-        - Intuitive URL structure
-        - Easy to extend with additional parameters
-        - Follows HTTP method semantics
-    - Trade-offs:
-        - More verbose URLs for nested resources
-        - Multiple requests needed for complex operations
+   - RESTful endpoints with clear resource naming
+   - Query parameters for transport calculations
+   - Rationale:
+      - Intuitive URL structure
+      - Easy to extend with additional parameters
+      - Follows HTTP method semantics
+   - Trade-offs:
+      - More verbose URLs for nested resources
+      - Multiple requests needed for complex operations
 
 4. **Technical Stack**
-    - Spring Boot with PostgreSQL
-    - Rationale:
-        - Robust framework with good JSON support
-        - PostgreSQL's JSONB type for efficient JSON storage
-        - Built-in connection pooling and transaction management
-    - Trade-offs:
-        - Higher resource usage than lighter frameworks
-        - More complex setup than simple APIs
+   - Spring Boot with PostgreSQL
+   - Rationale:
+      - Vital framework with good JSON support
+      - PostgreSQL's JSONB type for efficient JSON storage
+      - Built-in connection pooling and transaction management
+   - Trade-offs:
+      - Higher resource usage than lighter frameworks
+      - More complex setup than simple APIs
 
 ### Areas for Improvement
 
 1. **Performance Optimizations**
-    - Cache frequently accessed routes
-    - Index JSON fields for faster searching
-    - Batch similar requests
+   - Cache frequently accessed routes
+   - Index JSON fields for faster searching
+   - Batch similar requests
 
 2. **Data Model Evolution**
-    - Consider normalizing data for better querying
-    - Add versioning for gate connections
-    - Implement soft deletes
+   - Consider normalising data for better querying
+   - Add versioning for gate connections
+   - Implement soft deletes
 
 3. **Additional Features**
-    - Multi-leg journey planning
-    - Alternative route suggestions
-    - Traffic-based routing
+   - Multi-leg journey planning
+   - Alternative route suggestions
+   - Traffic-based routing
 
 ## Features
 
